@@ -55,6 +55,7 @@ program
   .option('-s, --step <number>', 'Sample every Nth commit', '1')
   .option('-g, --granularity <type>', 'Granularity: commits | daily | weekly | monthly', 'commits')
   .option('-t, --top <number>', 'Limit to top N languages by total lines', '0')
+  .option('-e, --exclude <languages>', 'Comma-separated list of languages to exclude (e.g., "HTML,CSS")')
   .parse();
 
 const options = program.opts();
@@ -164,7 +165,13 @@ async function main() {
     const sortedLangs = [...langs].sort((a, b) => langTotals[b] - langTotals[a]);
     
     // Filter languages if top-N is specified
-    const filteredLangs = top > 0 ? sortedLangs.slice(0, top) : [...sortedLangs].sort();
+    let filteredLangs = top > 0 ? sortedLangs.slice(0, top) : [...sortedLangs].sort();
+    
+    // Exclude specified languages
+    if (options.exclude) {
+      const excludeLangs = new Set(options.exclude.split(',').map((lang: string) => lang.trim()));
+      filteredLangs = filteredLangs.filter(lang => !excludeLangs.has(lang));
+    }
     
     // Write CSV
     const csvFilePath = 'loc_over_time_by_lang.csv';

@@ -32,8 +32,9 @@ cloc-graph [options]
 
 - `-p, --path <path>`: Path to the Git repository (default: current directory)
 - `-s, --step <number>`: Sample every Nth commit (default: 1)
-- `-g, --granularity <type>`: Granularity: commits | daily | weekly (default: commits)
+- `-g, --granularity <type>`: Granularity: commits | daily | weekly | monthly (default: commits)
 - `-t, --top <number>`: Limit to top N languages by total lines (default: all languages)
+- `-e, --exclude <languages>`: Comma-separated list of languages to exclude (e.g., "HTML,CSS")
 
 ### Examples
 
@@ -49,6 +50,9 @@ cloc-graph -t 5
 
 # Sample every 10th commit to process large repositories faster
 cloc-graph -s 10
+
+# Generate graph excluding certain languages
+cloc-graph -e HTML,CSS
 ```
 
 ## Outputs
