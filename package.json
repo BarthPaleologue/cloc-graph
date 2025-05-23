@@ -22,8 +22,8 @@
     "visualization",
     "code-analysis"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Barthélemy Paléologue",
+  "license": "MIT",
   "dependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.21",

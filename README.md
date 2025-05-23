@@ -82,4 +82,6 @@ npm run dev
 
 ## License
 
-ISC
+MIT © Barthélemy Paléologue
+
+See the [LICENSE](LICENSE) file for details.

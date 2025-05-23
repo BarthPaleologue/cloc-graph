@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+/**
+ * cloc-graph
+ * 
+ * MIT License
+ * Copyright (c) 2025 Barthélemy Paléologue
+ */
 
 import { Command } from 'commander';
 import { simpleGit, SimpleGit } from 'simple-git';
