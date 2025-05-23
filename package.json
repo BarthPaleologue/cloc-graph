@@ -1,0 +1,48 @@
+{
+  "name": "cloc-graph",
+  "version": "1.0.0",
+  "description": "Track lines of code over time by language with visualization",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "cloc-graph": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "cloc",
+    "git",
+    "visualization",
+    "code-analysis"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.21",
+    "chart.js": "^3.9.1",
+    "chartjs-node-canvas": "^4.1.6",
+    "commander": "^12.0.0",
+    "csv-writer": "^1.6.0",
+    "fs-extra": "^11.2.0",
+    "simple-git": "^3.23.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

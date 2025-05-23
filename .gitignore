@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Generated files
+loc_over_time_by_lang.csv
+loc_chart.png
