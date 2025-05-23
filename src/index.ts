@@ -57,6 +57,7 @@ program
   .option('-g, --granularity <type>', 'Granularity: commits | daily | weekly | monthly', 'commits')
   .option('-t, --top <number>', 'Limit to top N languages by total lines', '0')
   .option('-e, --exclude <languages>', 'Comma-separated list of languages to exclude (e.g., "HTML,CSS")')
+  .option('-i, --include <languages>', 'Comma-separated list of languages to include (e.g., "JavaScript,TypeScript")')
   .option('-f, --from <date>', 'Start date for time range in YYYY-MM-DD format')
   .option('-u, --to <date>', 'End date for time range in YYYY-MM-DD format')
   .option('-m, --max-samples <number>', 'Maximum number of commits to analyze', '100')
@@ -198,6 +199,12 @@ async function main() {
     if (options.exclude) {
       const excludeLangs = new Set(options.exclude.split(',').map((lang: string) => lang.trim()));
       filteredLangs = filteredLangs.filter(lang => !excludeLangs.has(lang));
+    }
+    
+    // Include only specified languages if --include option is used
+    if (options.include) {
+      const includeLangs = new Set(options.include.split(',').map((lang: string) => lang.trim()));
+      filteredLangs = filteredLangs.filter(lang => includeLangs.has(lang));
     }
     
     // Write CSV
