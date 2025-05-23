@@ -1,24 +1,34 @@
-# Source files (since we publish the compiled version)
+# Source
 src/
-
-# Config files
 tsconfig.json
-.gitignore
+*.ts
+!*.d.ts
 
-# Editor specific files
+# Development
+.github/
 .vscode/
-.idea/
-*.swp
-*.swo
+.editorconfig
+.eslint*
+.prettier*
+jest.config.js
+*.config.mjs
+coverage/
 
-# OS specific files
-.DS_Store
-Thumbs.db
-
-# Python original script
-main.py
-
-# Test files and folders
-tests/
+# Tests
+__tests__/
 *.test.ts
 *.spec.ts
+
+# Examples
+examples/
+
+# Git
+.git/
+.gitignore
+
+# Misc
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
