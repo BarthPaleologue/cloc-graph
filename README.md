@@ -1,15 +1,14 @@
 # cloc-graph
 
+[![CI](https://github.com/BarthPaleologue/cloc-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/BarthPaleologue/cloc-graph/actions/workflows/ci.yml)
+
 A TypeScript tool for tracking lines of code over time by language with visualization.
 
 ![Lines of Code Chart Example](loc_chart-1.png)
 
-[![CI Status](https://github.com/yourusername/cloc-graph/workflows/CI/badge.svg)](https://github.com/yourusername/cloc-graph/actions)
-[![codecov](https://codecov.io/gh/yourusername/cloc-graph/branch/master/graph/badge.svg)](https://codecov.io/gh/yourusername/cloc-graph)
-
 ## Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js
 - Git
 - [cloc](https://github.com/AlDanial/cloc) (Count Lines of Code) installed and available in your PATH
 
