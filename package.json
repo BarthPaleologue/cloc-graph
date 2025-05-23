@@ -7,6 +7,14 @@
   "bin": {
     "cloc-graph": "./dist/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BarthPaleologue/cloc-graph.git"
+  },
+  "homepage": "https://github.com/BarthPaleologue/cloc-graph#readme",
+  "bugs": {
+    "url": "https://github.com/BarthPaleologue/cloc-graph/issues"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
