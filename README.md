@@ -2,6 +2,8 @@
 
 A TypeScript tool for tracking lines of code over time by language with visualization.
 
+![alt text](loc_chart-1.png)
+
 ## Prerequisites
 
 - Node.js (v16 or higher)
