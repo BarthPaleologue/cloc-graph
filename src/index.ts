@@ -183,7 +183,7 @@ async function main() {
 async function generateChart(records: Record[], languages: string[]) {
   const width = 800;
   const height = 600;
-  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height });
+  const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColour: 'white' });
   
   // Prepare data for chart
   const dates = records.map(r => r.date);
