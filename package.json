@@ -38,10 +38,10 @@
   "author": "Barthélemy Paléologue",
   "license": "MIT",
   "dependencies": {
-    "chart.js": "^3.9.1",
-    "chartjs-node-canvas": "^4.1.6",
+    "chart.js": "^4.4.9",
+    "chartjs-node-canvas": "^5.0.0",
     "cli-progress": "^3.12.0",
-    "commander": "^12.0.0",
+    "commander": "^14.0.0",
     "csv-writer": "^1.6.0",
     "fs-extra": "^11.2.0",
     "simple-git": "^3.23.0"
