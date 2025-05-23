@@ -100,6 +100,19 @@ npm run build
 npm run dev
 ```
 
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode during development
+npm run test:watch
+
+# Generate test coverage report
+npm run test:coverage
+```
+
 ## License
 
 MIT © Barthélemy Paléologue
