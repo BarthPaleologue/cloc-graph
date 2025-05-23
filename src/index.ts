@@ -7,7 +7,7 @@
  */
 
 import * as path from "path";
-import * as fs from "fs-extra";
+// Import fs-extra but don't use direct fs import to avoid linting error
 import { createObjectCsvWriter } from "csv-writer";
 import { parseCommandLineArgs, validateOptions } from "./cli";
 import { initializeGitRepo, getCommits } from "./services/gitService";
@@ -15,12 +15,16 @@ import { analyzeCommit, createRecord } from "./services/clocService";
 import { generateChart } from "./services/chartService";
 import { formatDate, getISOWeek, getYearMonth } from "./utils/dateUtils";
 import { Record } from "./types";
+import { AppError, handleError, ErrorTypes } from "./utils/errorHandler";
+import { logger } from "./utils/logger";
 
 // Register Chart.js components
 import "chart.js/auto";
 
-async function main() {
+async function main(): Promise<number> {
   try {
+    logger.info("Starting cloc-graph analysis");
+
     // Parse and validate command line options
     const options = parseCommandLineArgs();
     validateOptions(options);
@@ -30,12 +34,17 @@ async function main() {
     const maxSamples = parseInt(options.maxSamples, 10);
     const repoPath = path.resolve(options.path);
 
+    logger.info(`Analyzing repository at ${repoPath}`);
+
     // Change to the target directory
     try {
       process.chdir(repoPath);
-    } catch (e) {
-      console.error(`Error: Could not change to directory ${repoPath}`);
-      process.exit(1);
+    } catch (_e) {
+      throw new AppError(
+        `Could not change to directory ${repoPath}`,
+        ErrorTypes.FILE_SYSTEM_ERROR,
+        2,
+      );
     }
 
     // Initialize git repository
@@ -46,10 +55,13 @@ async function main() {
     const langs = new Set<string>();
 
     // Get commits with optional smart sampling
+    logger.info("Retrieving commits from repository");
     const targetCommits = await getCommits(git, {
       maxSamples,
       smartSampling: options.smartSampling,
     });
+
+    logger.info(`Processing ${targetCommits.length} commits`);
 
     // Iterate through commits
     for (let idx = 0; idx < targetCommits.length; idx++) {
@@ -64,7 +76,8 @@ async function main() {
         continue;
       }
 
-      const commitDate = new Date(commit.date);
+      // Handle potentially undefined date property
+      const commitDate = commit.date ? new Date(commit.date) : new Date();
       const dateStr = formatDate(commitDate);
 
       // Filter by date range if specified
@@ -94,29 +107,36 @@ async function main() {
       seen.add(key);
 
       // Run cloc on this commit and create a record
+      logger.debug(`Processing commit ${commit.hash} from ${dateStr}`);
       const data = analyzeCommit(commit.hash);
       const record = createRecord(data, commitDate, langs);
       records.push(record);
 
       // Stop if we've reached the maximum number of samples
       if (records.length >= maxSamples) {
+        logger.info(`Reached maximum sample limit of ${maxSamples}`);
         break;
       }
+    }
+
+    if (records.length === 0) {
+      logger.warn(
+        "No commit data was collected. Check your filters and options.",
+      );
+      return 0;
     }
 
     // Calculate language totals for top-N filtering
     const langTotals: { [lang: string]: number } = {};
     for (const lang of langs) {
       langTotals[lang] = records.reduce(
-        (sum, rec) => sum + ((rec[lang] as number) || 0),
+        (sum, rec) => sum + (rec[lang] as number || 0),
         0,
       );
     }
 
     // Sort languages by total LOC
-    const sortedLangs = [...langs].sort(
-      (a, b) => langTotals[b] - langTotals[a],
-    );
+    const sortedLangs = [...langs].sort((a, b) => langTotals[b] - langTotals[a]);
 
     // Filter languages if top-N is specified
     let filteredLangs =
@@ -138,6 +158,10 @@ async function main() {
       filteredLangs = filteredLangs.filter((lang) => includeLangs.has(lang));
     }
 
+    logger.info(
+      `Analyzed ${filteredLangs.length} languages across ${records.length} data points`,
+    );
+
     // Write CSV
     const csvFilePath = "loc_over_time_by_lang.csv";
     const csvWriter = createObjectCsvWriter({
@@ -149,19 +173,27 @@ async function main() {
     });
 
     await csvWriter.writeRecords(records);
-    console.log(
-      `Wrote ${csvFilePath} (${records.length} rows, top ${filteredLangs.length} langs) from '${repoPath}'`,
+    logger.info(
+      `Wrote ${csvFilePath} (${records.length} rows, top ${filteredLangs.length} languages) from '${repoPath}'`,
     );
 
     // Generate chart
     await generateChart(records, filteredLangs);
+    logger.info("Analysis completed successfully");
+
+    return 0;
   } catch (e) {
-    console.error(`Error: ${e}`);
-    process.exit(1);
+    return handleError(e);
   }
 }
 
-main().catch((err) => {
-  console.error("Unexpected error:", err);
-  process.exit(1);
-});
+main()
+  .then((exitCode) => {
+    if (exitCode !== 0) {
+      process.exit(exitCode);
+    }
+  })
+  .catch((err) => {
+    logger.error("Unhandled exception", { error: err.message });
+    process.exit(1);
+  });

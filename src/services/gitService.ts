@@ -1,9 +1,8 @@
 /**
  * Git repository service
  */
-import { simpleGit, SimpleGit } from "simple-git";
-import * as path from "path";
-import { smartSampleCommits } from "../utils/sampling";
+import { simpleGit, SimpleGit } from 'simple-git';
+import { smartSampleCommits, CommitInfo } from '../utils/sampling';
 
 /**
  * Initialize Git repository and verify it exists
@@ -39,10 +38,16 @@ export async function getCommits(
     maxSamples: number;
     smartSampling?: boolean;
   },
-): Promise<any[]> {
+): Promise<CommitInfo[]> {
   // Get all commits in chronological order (oldest first)
-  const commits = await git.log(["--reverse"]);
-  const allCommits = [...commits.all]; // Create a copy to avoid readonly issues
+  const commits = await git.log(['--reverse']);
+
+  // Create a properly typed copy of the commit objects
+  const allCommits: CommitInfo[] = [...commits.all].map(commit => ({
+    hash: commit.hash,
+    date: commit.date,
+    // Include any other properties you need
+  }));
 
   // Apply smart sampling if enabled and needed
   if (options.smartSampling && allCommits.length > options.maxSamples) {
