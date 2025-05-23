@@ -14,6 +14,7 @@ import * as path from 'path';
 import { createObjectCsvWriter } from 'csv-writer';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { Chart, ChartConfiguration } from 'chart.js';
+import * as os from 'os';
 
 // Register Chart.js components
 import 'chart.js/auto';
@@ -58,6 +59,8 @@ program
   .option('-e, --exclude <languages>', 'Comma-separated list of languages to exclude (e.g., "HTML,CSS")')
   .option('-f, --from <date>', 'Start date for time range in YYYY-MM-DD format')
   .option('-u, --to <date>', 'End date for time range in YYYY-MM-DD format')
+  .option('-m, --max-samples <number>', 'Maximum number of commits to analyze', '100')
+  .option('--smart-sampling', 'Use smart sampling algorithm for large repositories')
   .parse();
 
 const options = program.opts();
@@ -71,6 +74,7 @@ async function main() {
   
   const step = parseInt(options.step, 10);
   const top = parseInt(options.top, 10);
+  const maxSamples = parseInt(options.maxSamples, 10);
   const repoPath = path.resolve(options.path);
   
   // Change to the target directory
@@ -103,13 +107,21 @@ async function main() {
   try {
     // Get all commits in chronological order (oldest first)
     const commits = await git.log(['--reverse']);
+    const allCommits = commits.all;
+    
+    // Apply smart sampling if enabled and needed
+    let targetCommits = allCommits;
+    if (options.smartSampling && allCommits.length > maxSamples) {
+      console.log(`Repository has ${allCommits.length} commits. Using smart sampling to select ${maxSamples} representative commits...`);
+      targetCommits = smartSampleCommits([...allCommits], maxSamples);
+    }
     
     // Iterate through commits
-    for (let idx = 0; idx < commits.all.length; idx++) {
-      const commit = commits.all[idx];
+    for (let idx = 0; idx < targetCommits.length; idx++) {
+      const commit = targetCommits[idx];
       
       // Apply step filtering for commit granularity
-      if (options.granularity === 'commits' && (idx + 1) % step !== 0) {
+      if (options.granularity === 'commits' && !options.smartSampling && (idx + 1) % step !== 0) {
         continue;
       }
       
@@ -163,6 +175,11 @@ async function main() {
         langs.add(lang);
       }
       records.push(rec);
+      
+      // Stop if we've reached the maximum number of samples
+      if (records.length >= maxSamples) {
+        break;
+      }
     }
     
     // Calculate language totals for top-N filtering
@@ -275,3 +292,20 @@ main().catch(err => {
   console.error('Unexpected error:', err);
   process.exit(1);
 });
+
+// Smart sampling function
+function smartSampleCommits(commits: any[], maxSamples: number) {
+  const sample: any[] = [];
+  const interval = Math.ceil(commits.length / maxSamples);
+  
+  for (let i = 0; i < commits.length; i += interval) {
+    sample.push(commits[i]);
+  }
+  
+  // Ensure we have exactly maxSamples, adjust the last sample if necessary
+  while (sample.length > maxSamples) {
+    sample.pop();
+  }
+  
+  return sample;
+}

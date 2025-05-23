@@ -39,6 +39,8 @@ cloc-graph [options]
 - `-e, --exclude <languages>`: Comma-separated list of languages to exclude (e.g., "HTML,CSS")
 - `-f, --from <date>`: Start date for time range in YYYY-MM-DD format
 - `-u, --to <date>`: End date for time range in YYYY-MM-DD format
+- `-m, --max-samples <number>`: Maximum number of commits to analyze (default: 100)
+- `--smart-sampling`: Use smart sampling algorithm for large repositories
 
 ### Examples
 
@@ -60,6 +62,9 @@ cloc-graph -e HTML,CSS
 
 # Generate graph for a specific time range
 cloc-graph -f 2023-01-01 -u 2023-12-31
+
+# Process large repositories more efficiently
+cloc-graph --smart-sampling -m 200
 ```
 
 ## Outputs
