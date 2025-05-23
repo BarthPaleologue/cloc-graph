@@ -47,7 +47,7 @@ program
   .description('Track lines of code over time by language with granularity, top-N, and repo path.')
   .option('-p, --path <path>', 'Path to the Git repository', '.')
   .option('-s, --step <number>', 'Sample every Nth commit', '1')
-  .option('-g, --granularity <type>', 'Granularity: commits | daily | weekly', 'commits')
+  .option('-g, --granularity <type>', 'Granularity: commits | daily | weekly | monthly', 'commits')
   .option('-t, --top <number>', 'Limit to top N languages by total lines', '0')
   .parse();
 
@@ -55,8 +55,8 @@ const options = program.opts();
 
 async function main() {
   // Validate options
-  if (!['commits', 'daily', 'weekly'].includes(options.granularity)) {
-    console.error('Error: --granularity must be one of: commits, daily, weekly');
+  if (!['commits', 'daily', 'weekly', 'monthly'].includes(options.granularity)) {
+    console.error('Error: --granularity must be one of: commits, daily, weekly, monthly');
     process.exit(1);
   }
   
@@ -117,6 +117,8 @@ async function main() {
         d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
         const week = Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 4).getTime()) / 86400000 / 7) + 1;
         key = `${commitDate.getFullYear()}-${week.toString().padStart(2, '0')}`;
+      } else if (options.granularity === 'monthly') {
+        key = commitDate.toISOString().slice(0, 7);  // YYYY-MM
       } else {
         key = `commit_${idx + 1}`;
       }
