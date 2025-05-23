@@ -17,6 +17,7 @@ import { formatDate, getISOWeek, getYearMonth } from "./utils/dateUtils";
 import { Record } from "./types";
 import { AppError, handleError, ErrorTypes } from "./utils/errorHandler";
 import { logger } from "./utils/logger";
+import { ProgressService } from "./services/progressService";
 
 // Register Chart.js components
 import "chart.js/auto";
@@ -63,6 +64,12 @@ async function main(): Promise<number> {
 
     logger.info(`Processing ${targetCommits.length} commits`);
 
+    // Create a progress bar instance
+    const progress = new ProgressService();
+    progress.start(targetCommits.length, {
+      title: "Processing commits",
+    });
+
     // Iterate through commits
     for (let idx = 0; idx < targetCommits.length; idx++) {
       const commit = targetCommits[idx];
@@ -73,6 +80,8 @@ async function main(): Promise<number> {
         !options.smartSampling &&
         (idx + 1) % step !== 0
       ) {
+        // Update progress without affecting the total
+        progress.increment();
         continue;
       }
 
@@ -82,9 +91,13 @@ async function main(): Promise<number> {
 
       // Filter by date range if specified
       if (options.from && dateStr < options.from) {
+        // Update progress without affecting the total
+        progress.increment();
         continue;
       }
       if (options.to && dateStr > options.to) {
+        // Update progress without affecting the total
+        progress.increment();
         continue;
       }
 
@@ -102,6 +115,8 @@ async function main(): Promise<number> {
 
       // Skip if we've already processed this key (date/week/month/commit)
       if (seen.has(key)) {
+        // Update progress without affecting the total
+        progress.increment();
         continue;
       }
       seen.add(key);
@@ -112,12 +127,18 @@ async function main(): Promise<number> {
       const record = createRecord(data, commitDate, langs);
       records.push(record);
 
+      // Update progress
+      progress.increment();
+
       // Stop if we've reached the maximum number of samples
       if (records.length >= maxSamples) {
         logger.info(`Reached maximum sample limit of ${maxSamples}`);
         break;
       }
     }
+
+    // Stop and finalize the progress bar
+    progress.stop();
 
     if (records.length === 0) {
       logger.warn(
