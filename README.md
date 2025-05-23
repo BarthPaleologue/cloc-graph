@@ -2,7 +2,10 @@
 
 A TypeScript tool for tracking lines of code over time by language with visualization.
 
-![alt text](loc_chart-1.png)
+![Lines of Code Chart Example](loc_chart-1.png)
+
+[![CI Status](https://github.com/yourusername/cloc-graph/workflows/CI/badge.svg)](https://github.com/yourusername/cloc-graph/actions)
+[![codecov](https://codecov.io/gh/yourusername/cloc-graph/branch/master/graph/badge.svg)](https://codecov.io/gh/yourusername/cloc-graph)
 
 ## Prerequisites
 
@@ -112,6 +115,43 @@ npm run test:watch
 # Generate test coverage report
 npm run test:coverage
 ```
+
+### Code Style
+
+This project uses Prettier for code formatting. You can format your code with:
+
+```bash
+npm run format
+```
+
+### Project Structure
+
+```
+src/
+├── cli/            # Command-line interface handling
+├── services/       # Core services
+│   ├── chartService.ts       # Chart generation
+│   ├── clocService.ts        # Code analysis
+│   └── gitService.ts         # Git repository interaction
+├── types/          # TypeScript type definitions
+├── utils/          # Utility functions
+│   ├── dateUtils.ts          # Date manipulation utilities
+│   └── sampling.ts           # Sampling algorithms
+└── __tests__/      # Test files
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Run tests to ensure everything works (`npm test`)
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+Please make sure your code passes all tests and follows the project's coding style.
 
 ## License
 
