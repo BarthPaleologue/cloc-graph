@@ -56,6 +56,8 @@ program
   .option('-g, --granularity <type>', 'Granularity: commits | daily | weekly | monthly', 'commits')
   .option('-t, --top <number>', 'Limit to top N languages by total lines', '0')
   .option('-e, --exclude <languages>', 'Comma-separated list of languages to exclude (e.g., "HTML,CSS")')
+  .option('-f, --from <date>', 'Start date for time range in YYYY-MM-DD format')
+  .option('-u, --to <date>', 'End date for time range in YYYY-MM-DD format')
   .parse();
 
 const options = program.opts();
@@ -113,6 +115,14 @@ async function main() {
       
       const commitDate = new Date(commit.date);
       const dateStr = commitDate.toISOString().split('T')[0];  // YYYY-MM-DD
+      
+      // Filter by date range if specified
+      if (options.from && dateStr < options.from) {
+        continue;
+      }
+      if (options.to && dateStr > options.to) {
+        continue;
+      }
       
       let key: string;
       if (options.granularity === 'daily') {

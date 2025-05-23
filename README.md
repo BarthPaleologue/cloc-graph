@@ -35,6 +35,8 @@ cloc-graph [options]
 - `-g, --granularity <type>`: Granularity: commits | daily | weekly | monthly (default: commits)
 - `-t, --top <number>`: Limit to top N languages by total lines (default: all languages)
 - `-e, --exclude <languages>`: Comma-separated list of languages to exclude (e.g., "HTML,CSS")
+- `-f, --from <date>`: Start date for time range in YYYY-MM-DD format
+- `-u, --to <date>`: End date for time range in YYYY-MM-DD format
 
 ### Examples
 
@@ -53,6 +55,9 @@ cloc-graph -s 10
 
 # Generate graph excluding certain languages
 cloc-graph -e HTML,CSS
+
+# Generate graph for a specific time range
+cloc-graph -f 2023-01-01 -u 2023-12-31
 ```
 
 ## Outputs
